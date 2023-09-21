@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class AuthenticationController {
 
+    //комментарии не писал так как не вижу смысла писать
+    //понять и простить)
+    //данный проект можно тестировать на постман тк работает с токеном
+
+
     private final AuthenticationService service;
 
     @PostMapping("/register/organization")

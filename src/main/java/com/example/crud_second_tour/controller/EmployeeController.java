@@ -16,6 +16,10 @@ import java.util.List;
 @CrossOrigin(origins = "*", maxAge = 3600)
 
 public class EmployeeController {
+
+    //комментарии не писал так как не вижу смысла писать
+    //понять и простить)
+    //данный проект можно тестировать на постман тк работает с токеном
     private final EmployeeService employeeService;
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'ORGANIZATION')")
     @GetMapping("/employee")

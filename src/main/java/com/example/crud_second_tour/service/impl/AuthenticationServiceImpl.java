@@ -98,12 +98,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new BadCredentialsException("User not found"));
         String token = jwtTokenProvider.createToken(user.getEmail(), userRepository.findByEmail(user.getEmail()).get().getRole());
-//        Optional<UserMessageInfo> userMessageInfo = userMessageInfoRepository.findByEmail(user.getEmail());
-//        List<Message> messages = messageRepository.findAllBySender(user.getEmail());
-
-// Obtain WebSocket session for the authenticated user
-
-
 
 
         return AuthenticationResponse.builder()

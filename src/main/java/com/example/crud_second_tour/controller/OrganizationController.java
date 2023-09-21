@@ -16,6 +16,11 @@ import java.util.List;
 @RequestMapping("/organization")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class OrganizationController {
+
+    //комментарии не писал так как не вижу смысла писать
+    //понять и простить)
+    //данный проект можно тестировать на постман тк работает с токеном
+
     private final OrganizationService organizationService;
 
     @PreAuthorize("hasAnyAuthority('ORGANIZATION', 'ADMIN')")
