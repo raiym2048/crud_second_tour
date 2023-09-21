@@ -17,8 +17,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -72,4 +74,98 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
     }
+
+    @Override
+    public List<EmployeeResponses> getAllOrganizationEmployers(Long id, String token) {
+        User user = userService.getUsernameFromToken(token);
+        checkForAdminRoleAndSecondParameterId(id,user);
+        if (user.getRole().equals(Role.ADMIN)){
+            if (organizationRepository.findById(id).isEmpty())
+                throw new BadCredentialsException("we have not organization with this id!");
+            return
+                    employeeMapper.toDtos
+                            (organizationRepository.findById(id).get().getEmployeeList());
+        }
+        return employeeMapper.toDtos
+                (user.getOrganization().getEmployeeList());
+    }
+
+    @Override
+    public void putEmployeeToOrganization(Long employeeId, Long organizationId, String token) {
+        if (employeeId==null)
+            throw new BadCredentialsException("the id of employee must not be null!");
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (employee.isEmpty())
+            throw new BadCredentialsException("We have not employee with this id!");
+
+        User user = userService.getUsernameFromToken(token);
+        checkForAdminRoleAndSecondParameterId(organizationId,user);
+        if (user.getRole().equals(Role.ADMIN)){
+            putEmployeeToOrganization(organizationId, employee);
+        }
+        else {
+            putEmployeeToOrganization(user, employee);
+        }
+    }
+
+    private void putEmployeeToOrganization(User user, Optional<Employee> employee){
+        Organization organization = user.getOrganization();
+        List<Employee> employees = organization.getEmployeeList();
+        if (!employees.contains(employee.get()))
+            employees.add(employee.get());
+        organization.setEmployeeList(employees);
+        organizationRepository.save(organization);
+    }
+    private void putEmployeeToOrganization(Long organizationId, Optional<Employee> employee){
+        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        if(organization.isEmpty())
+            throw new BadCredentialsException("We have not organization with this id!");
+        List<Employee> employees = organization.get().getEmployeeList();
+        if (!employees.contains(employee.get()))
+            employees.add(employee.get());
+        organization.get().setEmployeeList(employees);
+        organizationRepository.save(organization.get());
+    }
+
+    private void checkForAdminRoleAndSecondParameterId(Long organizationId, User user) {
+        if (organizationId == null && user.getRole().equals(Role.ADMIN))
+            throw new BadCredentialsException("the id of organization is null! we dont know which one we will show");
+
+    }
+    @Override
+    public void removeEmployeeFromOrganization(Long employeeId, Long organizationId, String token) {
+        if (employeeId==null)
+            throw new BadCredentialsException("the id of employee must not be null!");
+
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (employee.isEmpty())
+            throw new BadCredentialsException("We have not employee with this id!");
+
+        User user = userService.getUsernameFromToken(token);
+        checkForAdminRoleAndSecondParameterId(organizationId, user);
+
+        if (user.getRole().equals(Role.ADMIN)) {
+            removeEmployeeFromOrganization(organizationId, employee);
+        } else {
+            removeEmployeeFromOrganization(user, employee);
+        }
+    }
+
+    private void removeEmployeeFromOrganization(User user, Optional<Employee> employee) {
+        Organization organization = user.getOrganization();
+        List<Employee> employees = organization.getEmployeeList();
+        employees.remove(employee.get());
+        organizationRepository.save(organization);
+    }
+
+    private void removeEmployeeFromOrganization(Long organizationId, Optional<Employee> employee) {
+        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        if (organization.isEmpty())
+            throw new BadCredentialsException("We have not organization with this id!");
+
+        List<Employee> employees = organization.get().getEmployeeList();
+        employees.remove(employee.get());
+        organizationRepository.save(organization.get());
+    }
+
 }

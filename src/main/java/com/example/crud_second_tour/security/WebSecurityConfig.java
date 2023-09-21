@@ -32,10 +32,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Entry points
         http.authorizeRequests()//
-                .antMatchers("/swagger-resources/**").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/admin/**").permitAll()
                 .antMatchers("/employee/**").permitAll()
                 .antMatchers("/organization/**").permitAll()
                 .antMatchers("/api/v1/auth/**").permitAll()
@@ -52,17 +48,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // http.httpBasic();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // Allow swagger to be accessed without authentication
-        web.ignoring().antMatchers("/v3/api-docs/**")//
-                .antMatchers("/swagger-resources/**")//
-                .antMatchers("/swagger-ui.html")//
-                .antMatchers("/swagger-ui/**")//
-                .antMatchers("/configuration/**")//
-                .antMatchers("/webjars/**")//
-                .antMatchers("/public");
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

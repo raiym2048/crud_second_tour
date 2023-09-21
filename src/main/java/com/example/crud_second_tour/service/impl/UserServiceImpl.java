@@ -29,6 +29,6 @@ public class UserServiceImpl implements UserService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return userRepository.findByEmail(String.valueOf(object.get("sub"))).orElseThrow(() -> new RuntimeException("user can be null"));
+        return userRepository.findByEmail(String.valueOf(object.get("sub"))).orElseThrow(() -> new RuntimeException("user can be null, invalid token"));
     }
 }

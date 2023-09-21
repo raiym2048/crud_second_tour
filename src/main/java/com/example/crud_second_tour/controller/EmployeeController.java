@@ -17,8 +17,8 @@ import java.util.List;
 
 public class EmployeeController {
     private final EmployeeService employeeService;
-
-    @GetMapping("/getAllEmployee")
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'ORGANIZATION')")
+    @GetMapping("/employee")
     public List<EmployeeResponses> getAllEmployee(@RequestHeader("Authorization") String token){
         return employeeService.getAllEmployee();
     }
@@ -34,6 +34,31 @@ public class EmployeeController {
     public void deleteEmployer(@RequestParam(required = false) Long id, @RequestHeader("Authorization") String token){
         employeeService.delete(id, token);
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
+    @GetMapping("/organizationEmployers")
+    public List<EmployeeResponses> getAllOrganizationEmployers(@RequestParam(required = false) Long id,
+                                                               @RequestHeader("Authorization") String token){
+        return employeeService.getAllOrganizationEmployers(id, token);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
+    @PutMapping("employeeToOrganization/{employeeId}")
+    public void putEmployeeToOrganization(@PathVariable Long employeeId,
+                                          @RequestParam(required = false) Long organizationId,
+                                          @RequestHeader("Authorization") String token){
+        employeeService.putEmployeeToOrganization(employeeId, organizationId, token);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
+    @DeleteMapping("employeeFromOrganization/{employeeId}")
+    public void removeEmployeeFromOrganization(@PathVariable Long employeeId,
+                                               @RequestParam(required = false) Long organizationId,
+                                               @RequestHeader("Authorization") String token){
+        employeeService.removeEmployeeFromOrganization(employeeId, organizationId, token);
+    }
+
+
 
 
 
