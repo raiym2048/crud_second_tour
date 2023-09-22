@@ -16,10 +16,10 @@ import java.util.Base64;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    @Override
+    @Override//получение пользователя из бд с помощью токена
     public User getUsernameFromToken(String token) {
 
-        String[] chunks = token.substring(7).split("\\.");
+        String[] chunks = token.substring(7).split("\\.");//убираем слово Барьер
         Base64.Decoder decoder = Base64.getUrlDecoder();
 
         JSONParser jsonParser = new JSONParser();

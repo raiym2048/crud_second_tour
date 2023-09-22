@@ -35,14 +35,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final OrganizationRepository organizationRepository;
     private final AuthenticationManager authenticationManager;
 
+    //регистрация сотрудника
     @Override
     public ResponseEntity<AuthenticationResponse> employerRegister(EmployeeRequest request) {
         User user = new User();
-        if (request.getEmail().contains("@")) {
+        if (request.getEmail().contains("@")) {// проверка почти на пренадлежность
             user.setEmail(request.getEmail());
         }
         if (request.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setPassword(passwordEncoder.encode(request.getPassword()));// декодим(защивровать) пароль
         }
         Employee employer = new Employee();
         employer.setEmail(user.getEmail());
@@ -52,13 +53,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRole(Role.EMPLOYEE);
 
         userRepository.save(user);
-        return ResponseEntity.ok(convertAuthentication(user));
+        return ResponseEntity.ok(convertAuthentication(user));//конвертация на ответ
     }
 
+    //регистрация организаций
     @Override
     public ResponseEntity<?> organizationRegister(OrganizationRequest request) {
         User user = new User();
-        if (request.getEmail().contains("@")) {
+        if (request.getEmail().contains("@")) {// проверка почти на пренадлежность
             user.setEmail(request.getEmail());
         }
         if (request.getPassword() != null) {
@@ -69,16 +71,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setOrganization(organization);
         organizationRepository.save(organization);
 
-        user.setRole(Role.ORGANIZATION);
+        user.setRole(Role.ORGANIZATION);// даем роль
 
         userRepository.save(user);
-        return ResponseEntity.ok(convertAuthentication(user));
+        return ResponseEntity.ok(convertAuthentication(user));// сторим для ответа(токен тоже дается после регистрации поэтому необязтельно логиниться)
     }
 
+    //авторизация
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         Optional<User> optionalAuth = userRepository.findByEmail(request.getEmail());
-        if (optionalAuth.isEmpty()) {
+        if (optionalAuth.isEmpty()) {// проверка пользователя из базы данных
             throw new BadCredentialsException ("User not found with email: " + request.getEmail());
         }
 
@@ -100,7 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String token = jwtTokenProvider.createToken(user.getEmail(), userRepository.findByEmail(user.getEmail()).get().getRole());
 
 
-        return AuthenticationResponse.builder()
+        return AuthenticationResponse.builder()// сторим для ответа(токен тоже дается после регистрации поэтому необязтельно логиниться)
                 .user(convertToResponse(user))
                 .accessToken(token)
                 .build();

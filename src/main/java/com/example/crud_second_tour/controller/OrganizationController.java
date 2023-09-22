@@ -16,24 +16,26 @@ import java.util.List;
 @RequestMapping("/organization")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class OrganizationController {
+    //ВСЕ ЕНДПОИНТЫ РАБОТАЕТ С ТОКЕНОМ
+    //НА КАКИЕ РОЛИ ЕСТЬ ДОСТУП К ОПРЕДЕЛЕННЫМИ ЕНДПОИНТАМИ НАПИСАНЫ В @PreAuthorize
 
-    //комментарии не писал так как не вижу смысла писать
-    //понять и простить)
-    //данный проект можно тестировать на постман тк работает с токеном
 
     private final OrganizationService organizationService;
 
+    //список всех организаций
     @PreAuthorize("hasAnyAuthority('ORGANIZATION', 'ADMIN')")
     @GetMapping("/getAllOrganizations")
     public List<OrganizationResponses> getAllOrganizations(){
         return organizationService.getAllOrganizations();
     }
+    //обновление организации
     @PreAuthorize("hasAnyAuthority('ORGANIZATION', 'ADMIN')")
     @PostMapping("/update/organization")
     public void update(@RequestBody(required = false) OrganizationRequests organizationRequests,
                        @RequestHeader("Authorization") String token){
         organizationService.update(organizationRequests, token);
     }
+    //удаление организаций
     @PreAuthorize("hasAnyAuthority('ORGANIZATION', 'ADMIN')")
     @DeleteMapping("/delete")
     public void delete(@RequestParam(required = false) Long id, @RequestHeader("Authorization") String token){

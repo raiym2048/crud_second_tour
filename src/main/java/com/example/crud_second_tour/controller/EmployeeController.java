@@ -16,29 +16,32 @@ import java.util.List;
 @CrossOrigin(origins = "*", maxAge = 3600)
 
 public class EmployeeController {
-
-    //комментарии не писал так как не вижу смысла писать
-    //понять и простить)
-    //данный проект можно тестировать на постман тк работает с токеном
+    //ВСЕ ЕНДПОИНТЫ РАБОТАЕТ С ТОКЕНОМ
+    //НА КАКИЕ РОЛИ ЕСТЬ ДОСТУП К ОПРЕДЕЛЕННЫМИ ЕНДПОИНТАМИ НАПИСАНЫ В @PreAuthorize
     private final EmployeeService employeeService;
+
+    //список всех сотрудников
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'ORGANIZATION')")
     @GetMapping("/employee")
     public List<EmployeeResponses> getAllEmployee(@RequestHeader("Authorization") String token){
         return employeeService.getAllEmployee();
     }
 
+    //обновление сотрудника
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     @PostMapping("/update/employer")
     public void updateEmployee(@RequestBody(required = false) EmployeeRequests requests, @RequestHeader("Authorization") String token ){
         employeeService.update(requests, token);
     }
 
+    //удаление сотрудника
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN', 'ORGANIZATION')")
     @DeleteMapping("/delete/employer")
     public void deleteEmployer(@RequestParam(required = false) Long id, @RequestHeader("Authorization") String token){
         employeeService.delete(id, token);
     }
 
+    //список всех сотрудников определенной организации
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
     @GetMapping("/organizationEmployers")
     public List<EmployeeResponses> getAllOrganizationEmployers(@RequestParam(required = false) Long id,
@@ -46,6 +49,7 @@ public class EmployeeController {
         return employeeService.getAllOrganizationEmployers(id, token);
     }
 
+    //добавление сотрудника в какой либо организации
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
     @PutMapping("employeeToOrganization/{employeeId}")
     public void putEmployeeToOrganization(@PathVariable Long employeeId,
@@ -53,7 +57,7 @@ public class EmployeeController {
                                           @RequestHeader("Authorization") String token){
         employeeService.putEmployeeToOrganization(employeeId, organizationId, token);
     }
-
+    //удаление сотрудика из какой либо организации
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ORGANIZATION')")
     @DeleteMapping("employeeFromOrganization/{employeeId}")
     public void removeEmployeeFromOrganization(@PathVariable Long employeeId,

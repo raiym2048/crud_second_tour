@@ -30,11 +30,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserService userService;
     private final OrganizationRepository organizationRepository;
     private final UserRepository userRepository;
+
+    // получение всех сотрудников.
     @Override
     public List<EmployeeResponses> getAllEmployee() {
         return employeeMapper.toDtos(employeeRepository.findAll());
     }
 
+     // обновление информации о сотруднике.
     @Override
     public void update(EmployeeRequests requests, String token) {
 
@@ -55,6 +58,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    // удаление сотрудника.
     @Override
     public void delete(Long id, String token) {
         User user = userService.getUsernameFromToken(token);
@@ -77,33 +81,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeResponses> getAllOrganizationEmployers(Long id, String token) {
         User user = userService.getUsernameFromToken(token);
-        checkForAdminRoleAndSecondParameterId(id,user);
+        checkForAdminRoleAndSecondParameterId(id,user);//проверка если вызывает админ то обязательно должен передавать индекс(айди) организаций
         if (user.getRole().equals(Role.ADMIN)){
             if (organizationRepository.findById(id).isEmpty())
-                throw new BadCredentialsException("we have not organization with this id!");
+                throw new BadCredentialsException("we have not organization with this id!");// ощибка если такой индекс организаций не существует в бд
             return
-                    employeeMapper.toDtos
+                    employeeMapper.toDtos//переводим сущность на ответ
                             (organizationRepository.findById(id).get().getEmployeeList());
         }
-        return employeeMapper.toDtos
+        return employeeMapper.toDtos//переводим сущность на ответ
                 (user.getOrganization().getEmployeeList());
     }
 
     @Override
     public void putEmployeeToOrganization(Long employeeId, Long organizationId, String token) {
-        if (employeeId==null)
+        if (employeeId==null)// проверка на индекс сотрудника(индекс должен обязательно передаваться)
             throw new BadCredentialsException("the id of employee must not be null!");
         Optional<Employee> employee = employeeRepository.findById(employeeId);
-        if (employee.isEmpty())
+        if (employee.isEmpty())// проверка на наличность сотрудника в бд
             throw new BadCredentialsException("We have not employee with this id!");
 
         User user = userService.getUsernameFromToken(token);
-        checkForAdminRoleAndSecondParameterId(organizationId,user);
+        checkForAdminRoleAndSecondParameterId(organizationId,user);//проверка если вызывает админ то обязательно должен передавать индекс(айди) организаций
         if (user.getRole().equals(Role.ADMIN)){
-            putEmployeeToOrganization(organizationId, employee);
+            putEmployeeToOrganization(organizationId, employee);//функция если админ вызывает
         }
         else {
-            putEmployeeToOrganization(user, employee);
+            putEmployeeToOrganization(user, employee);//функция если организация вызывает
         }
     }
 
@@ -133,19 +137,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     @Override
     public void removeEmployeeFromOrganization(Long employeeId, Long organizationId, String token) {
-        if (employeeId==null)
+        if (employeeId==null)//проверка на наличность индекса
             throw new BadCredentialsException("the id of employee must not be null!");
 
         Optional<Employee> employee = employeeRepository.findById(employeeId);
-        if (employee.isEmpty())
+        if (employee.isEmpty())//проверка на наличность сущности в бд
             throw new BadCredentialsException("We have not employee with this id!");
 
         User user = userService.getUsernameFromToken(token);
-        checkForAdminRoleAndSecondParameterId(organizationId, user);
+        checkForAdminRoleAndSecondParameterId(organizationId, user);//проверка если вызывает админ то обязательно должен передавать индекс(айди) организаций
 
         if (user.getRole().equals(Role.ADMIN)) {
+            //удаление для админа
             removeEmployeeFromOrganization(organizationId, employee);
         } else {
+            //удаление для организаций
             removeEmployeeFromOrganization(user, employee);
         }
     }

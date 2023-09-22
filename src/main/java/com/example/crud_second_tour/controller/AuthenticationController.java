@@ -13,25 +13,23 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @AllArgsConstructor
 public class AuthenticationController {
+    //ВСЕ ЕНДПОИНТЫ РАБОТАЕТ С ТОКЕНОМ
 
-    //комментарии не писал так как не вижу смысла писать
-    //понять и простить)
-    //данный проект можно тестировать на постман тк работает с токеном
 
 
     private final AuthenticationService service;
-
+    // регистрация организаций
     @PostMapping("/register/organization")
     public ResponseEntity<?> organizationRegister(@RequestBody OrganizationRequest request) {
         return service.organizationRegister(request);
     }
-
+    //регистрация сотрудника
     @PostMapping("/register/emp")
     public ResponseEntity<?> employerRegister(@RequestBody EmployeeRequest request) {
         return service.employerRegister(request);
     }
 
-
+    //авторизация
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(service.authenticate(request));
