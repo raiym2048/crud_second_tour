@@ -41,7 +41,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         User user = userService.getUsernameFromToken(token);
         Employee employee = employeeRepository.findById(user.getEmployee().getId()).get();
-        System.out.println("id of employee: "+employee.getId());
         employee.setBankDetails(requests.getBankDetails());
         employee.setPosition(requests.getPosition());
         employee.setHomeAddress(requests.getHomeAddress());
