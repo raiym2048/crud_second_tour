@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @AllArgsConstructor
 public class AuthenticationController {
-    //ВСЕ ЕНДПОИНТЫ РАБОТАЕТ С ТОКЕНОМ
-
 
 
     private final AuthenticationService service;
